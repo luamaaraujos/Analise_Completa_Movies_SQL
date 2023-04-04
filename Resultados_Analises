@@ -1,0 +1,37 @@
+Após informções dos gestores, essas foram as dúvidas surgidas. Trouxe na forma de perguntas, para facilitar a visualização e organização das análises. 
+
+
+Pergunta 1. Qual o preço médio do aluguel dos filmes? 
+
+SELECT
+	AVG(preco_aluguel) AS 'Preço Médio Aluguel Filmes'
+FROM filmes;
+
++------------------------------+
+| Preço Médio Aluguel Filmes   |
++------------------------------+
+|            2.209718309859155 |
++------------------------------+
+
+Pergunta 2. Qual é o preço médio de cada gênero de filme na locadora HashtagMovie?
+
+SELECT 
+    genero, 
+    AVG(preco_aluguel) AS 'Preço Médio Aluguel Filmes'
+FROM
+    filmes
+GROUP BY genero;
+
++----------------------+------------------------------+
+| genero               | Preço Médio Aluguel Filmes   |
++----------------------+------------------------------+
+| Ação e Aventura      |           2.5100000000000002 |
+| Animação             |                         1.79 |
+| Arte                 |                         2.59 |
+| Comédia              |                         2.29 |
+| Drama                |             2.15388888888889 |
+| Ficção e Fantasia    |            2.244545454545454 |
+| Mistério e Suspense  |           2.1733333333333333 |
++----------------------+------------------------------+
+
+Pergunta 3. 
