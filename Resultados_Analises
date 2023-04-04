@@ -2,6 +2,7 @@ Após informções dos gestores, essas foram as dúvidas surgidas. Trouxe na for
 
 
 Pergunta 1. Qual o preço médio do aluguel dos filmes? 
+-- Essa é uma análise simples e não requer muita explicação. O código é o seguinte: 
 
 SELECT
 	AVG(preco_aluguel) AS 'Preço Médio Aluguel Filmes'
@@ -13,25 +14,264 @@ FROM filmes;
 |            2.209718309859155 |
 +------------------------------+
 
-Pergunta 2. Qual é o preço médio de cada gênero de filme na locadora HashtagMovie?
+Pergunta 2. Qual é o gênero cujo preço é mais alto na locadora HashtagMovie?
+-- Para responder essa pergunta, resolvi agrupar por gênero e ordenar por Preço médio do aluguel. Poderia ainda colocar o LIMIT 1, para 
+aparecer apenas o mais caro, mas preferi deixar todos, para que os gestores tenham uma visualização fácil do mais caro, mas consiga saber também
+o preço dos demais
 
 SELECT 
     genero, 
     AVG(preco_aluguel) AS 'Preço Médio Aluguel Filmes'
 FROM
     filmes
-GROUP BY genero;
+GROUP BY genero
+ORDER BY AVG(preco_aluguel) DESC;
 
 +----------------------+------------------------------+
 | genero               | Preço Médio Aluguel Filmes   |
 +----------------------+------------------------------+
-| Ação e Aventura      |           2.5100000000000002 |
-| Animação             |                         1.79 |
 | Arte                 |                         2.59 |
+| Ação e Aventura      |           2.5100000000000002 |
 | Comédia              |                         2.29 |
-| Drama                |             2.15388888888889 |
 | Ficção e Fantasia    |            2.244545454545454 |
 | Mistério e Suspense  |           2.1733333333333333 |
+| Drama                |             2.15388888888889 |
+| Animação             |                         1.79 |
 +----------------------+------------------------------+
 
-Pergunta 3. 
+Pergunta 3. A ideia é saber o preço médio de cada filme de acordo com o gênero, mas apenas daquele cujo lançamento foi em 2011. 
+-- Nesse caso aqui, apenas limitei ao ano de lançamento do filme com uma cláusula WHERE
+
+SELECT 
+    genero, 
+    AVG(preco_aluguel) AS 'Preço Médio Aluguel Filmes'
+FROM
+    filmes
+WHERE ano_lancamento = '2011'
+GROUP BY genero
+ORDER BY AVG(preco_aluguel) DESC;
+
++----------------------+------------------------------+
+| genero               | Preço Médio Aluguel Filmes   |
++----------------------+------------------------------+
+| Mistério e Suspense  |                         2.39 |
+| Drama                |                        2.215 |
+| Comédia              |                         2.09 |
+| Ficção e Fantasia    |                         1.99 |
++----------------------+------------------------------+
+
+Pergunta 4. Os gestores querem uma análise do desempenho dos alugueis. 
+-- Uma vez que os clientes aplicam notas aos filmes a cada aluguel, fiz questão de usar essa nota como parâmetro de desempenho. 
+Dessa forma, considerei a média de cada filme, e para facilitar a visualização e classificação, ordenei de forma descendente. 
+
+SELECT 
+	filmes.id_filme,
+	filmes.titulo,
+	AVG(alugueis.nota) AS 'Nota Média'
+FROM filmes
+INNER JOIN alugueis 
+	ON alugueis.id_filme = filmes.id_filme
+GROUP BY alugueis.id_filme
+ORDER BY AVG(alugueis.nota) DESC;
+    
++----------+------------------------------------------------+-------------------+
+| id_filme | titulo                                         | Nota Média        |
++----------+------------------------------------------------+-------------------+
+|       48 | Astro Boy                                      |                10 |
+|        5 | O Senhor dos Anéis: A sociedade do anel        |              9.75 |
+|       42 | Onde os Fracos Não Têm Vez                     |               9.6 |
+|       63 | Django Livre                                   | 9.333333333333334 |
+|        3 | Do que as mulheres gostam                      |                 9 |
+|       18 | Lições Para Toda a Vida                        |                 9 |
+|       65 | Motoqueiro Fantasma - Espírito de Vingança     |                 9 |
+|       57 | Jovens Adultos                                 | 8.833333333333334 |
+|        6 | Harry Potter e a Pedra Filosofal               |               8.8 |
+|       47 | Um Amor de Tesouro                             |              8.75 |
+|       22 | Visões                                         | 8.666666666666666 |
+|       38 | A casa do lago                                 | 8.666666666666666 |
+|       49 | Harry Potter e o Enigma do Príncipe            | 8.636363636363637 |
+|       16 | A última noite                                 |               8.6 |
+|       60 | Morte Negra                                    |               8.5 |
+|       51 | Uma Manhã Gloriosa                             | 8.428571428571429 |
+|       24 | Uma Eleição Muito Atrapalhada                  |               8.4 |
+|       33 | V de Vingança                                  |               8.4 |
+|        9 | 11 de setembro                                 | 8.333333333333334 |
+|       26 | Ray                                            | 8.333333333333334 |
+|       58 | Histórias Cruzadas                             | 8.333333333333334 |
+|       27 | Monster - Desejo Assassino                     | 8.285714285714286 |
+|       62 | As Sessões                                     |              8.25 |
+|       64 | A Viagem                                       |              8.25 |
+|       40 | Quando Me Apaixono                             | 8.166666666666666 |
+|       54 | Harry Potter e as Relíquias da Morte: Parte 1  | 8.166666666666666 |
+|        7 | Os Excêntricos Tenenbaums                      |                 8 |
+|        8 | Seu marido e minha mulher                      |                 8 |
+|       13 | Harry Potter e a Câmara Secreta                |                 8 |
+|       17 | Revelações                                     |                 8 |
+|       23 | Dança comigo                                   |                 8 |
+|       28 | Harry Potter e o Prisioneiro de Azkabam        |                 8 |
+|       29 | Tudo por Dinheiro                              |                 8 |
+|       34 | Armações do Amor                               |                 8 |
+|       35 | Happy Feet                                     |                 8 |
+|       39 | Não estou lá                                   |                 8 |
+|       50 | Inverno da Alma                                |                 8 |
+|       53 | O Vencedor                                     |                 8 |
+|       61 | Harry Potter e as Relíquias da Morte: Parte 2  |                 8 |
+|       71 | Rio 2                                          |                 8 |
+|        4 | Dia de Treinamento                             | 7.888888888888889 |
+|       12 | O Senhor dos Anéis: As duas torres             | 7.833333333333333 |
+|       41 | O Reino                                        |               7.8 |
+|       69 | Sangue no Gelo                                 |               7.8 |
+|       70 | Capitão Phillips                               |              7.75 |
+|       37 | Candy                                          | 7.666666666666667 |
+|       67 | O Ataque                                       | 7.666666666666667 |
+|       25 | Bridget Jones: No Limite da Razão              |               7.5 |
+|       55 | Mulheres ao Ataque                             |               7.5 |
+|       44 | Harry Potter e a Ordem da Fênix                | 7.333333333333333 |
+|        1 | Que mulher é essa?                             |              7.25 |
+|        2 | A Senha                                        |              7.25 |
+|       30 | Capote                                         |              7.25 |
+|       31 | Harry Potter e o Cálice de Fogo                |              7.25 |
+|       32 | Falsária                                       |              7.25 |
+|       46 | Sleepwalking                                   |              7.25 |
+|       19 | 21 gramas                                      |               7.2 |
+|       52 | Jogo de Poder                                  | 7.142857142857143 |
+|       20 | Simplesmente amor                              |                 7 |
+|       21 | O Senhor dos Anéis: O retorno do rei           |                 7 |
+|       36 | As Torres Gêmeas                               |                 7 |
+|       45 | Queime Depois de Ler                           |                 7 |
+|       10 | Simone                                         | 6.833333333333333 |
+|       66 | Jogos Vorazes                                  |               6.8 |
+|       14 | O Novato                                       |               6.5 |
+|       15 | Alguém tem que ceder                           |               6.5 |
+|       68 | Sem proteção                                   | 6.333333333333333 |
+|       43 | Invasores                                      |                 6 |
+|       59 | Pior dos Pecados                               |                 6 |
+|       56 | Cada Um Tem a Gêmea Que Merece                 | 5.666666666666667 |
+|       11 | É hora do show                                 |              NULL |
++----------+------------------------------------------------+-------------------+
+
+-- Ainda nessa quarta pergunta, eu resolvi retornar apenas aqueles cujas notas médias fossem acima da média. 
+Para isso, fiz uma nova análise e usei a cláusula HAVING, um vez que estou usando funções de agregação. 
+O código ficou assim: 
+
+SELECT 
+    filmes.id_filme,
+    filmes.titulo,
+    AVG(alugueis.nota) AS 'Nota Média'
+FROM filmes
+INNER JOIN alugueis 
+    ON alugueis.id_filme = filmes.id_filme
+GROUP BY alugueis.id_filme
+HAVING AVG(alugueis.nota) >= (SELECT AVG(nota) FROM alugueis)
+ORDER BY AVG(alugueis.nota) DESC;
+
+E o resultado é o seguinte: 
++----------+------------------------------------------------+-------------------+
+| id_filme | titulo                                         | Nota Média        |
++----------+------------------------------------------------+-------------------+
+|       48 | Astro Boy                                      |                10 |
+|        5 | O Senhor dos Anéis: A sociedade do anel        |              9.75 |
+|       42 | Onde os Fracos Não Têm Vez                     |               9.6 |
+|       63 | Django Livre                                   | 9.333333333333334 |
+|        3 | Do que as mulheres gostam                      |                 9 |
+|       18 | Lições Para Toda a Vida                        |                 9 |
+|       65 | Motoqueiro Fantasma - Espírito de Vingança     |                 9 |
+|       57 | Jovens Adultos                                 | 8.833333333333334 |
+|        6 | Harry Potter e a Pedra Filosofal               |               8.8 |
+|       47 | Um Amor de Tesouro                             |              8.75 |
+|       22 | Visões                                         | 8.666666666666666 |
+|       38 | A casa do lago                                 | 8.666666666666666 |
+|       49 | Harry Potter e o Enigma do Príncipe            | 8.636363636363637 |
+|       16 | A última noite                                 |               8.6 |
+|       60 | Morte Negra                                    |               8.5 |
+|       51 | Uma Manhã Gloriosa                             | 8.428571428571429 |
+|       24 | Uma Eleição Muito Atrapalhada                  |               8.4 |
+|       33 | V de Vingança                                  |               8.4 |
+|        9 | 11 de setembro                                 | 8.333333333333334 |
+|       26 | Ray                                            | 8.333333333333334 |
+|       58 | Histórias Cruzadas                             | 8.333333333333334 |
+|       27 | Monster - Desejo Assassino                     | 8.285714285714286 |
+|       62 | As Sessões                                     |              8.25 |
+|       64 | A Viagem                                       |              8.25 |
+|       40 | Quando Me Apaixono                             | 8.166666666666666 |
+|       54 | Harry Potter e as Relíquias da Morte: Parte 1  | 8.166666666666666 |
+|        7 | Os Excêntricos Tenenbaums                      |                 8 |
+|        8 | Seu marido e minha mulher                      |                 8 |
+|       13 | Harry Potter e a Câmara Secreta                |                 8 |
+|       17 | Revelações                                     |                 8 |
+|       23 | Dança comigo                                   |                 8 |
+|       28 | Harry Potter e o Prisioneiro de Azkabam        |                 8 |
+|       29 | Tudo por Dinheiro                              |                 8 |
+|       34 | Armações do Amor                               |                 8 |
+|       35 | Happy Feet                                     |                 8 |
+|       39 | Não estou lá                                   |                 8 |
+|       50 | Inverno da Alma                                |                 8 |
+|       53 | O Vencedor                                     |                 8 |
+|       61 | Harry Potter e as Relíquias da Morte: Parte 2  |                 8 |
+|       71 | Rio 2                                          |                 8 |
++----------+------------------------------------------------+-------------------+
+
+-- Apenas para nível de confirmação, vou dispor abaixo a nota média dos filmes. 
+
+SELECT AVG(nota) FROM alugueis;
++-------------------+
+| AVG(nota)         |
++-------------------+
+| 7.939024390243903 |
+
+-- É possível perceber que só aparece na tabela anterior, os filmes cuja nota são maiores que 7.939024390243903
+-- A vantagem é que à medida que novos filmes são incluídos, essa lista vai sendo atualizada automaticamente. 
+
+Pergunta 5. Por fim, a criação de uma view, de forma a facilitar a consulta pelos gestores. 
+-- Os gestores queriam saber o preço médio do aluguel e a quantidade de filmes de cada gênero disponível no catálogo. 
+Como é uma pesquisa que seria constante deles realizarem, criei essa viu para facilitar esse acesso. 
+Vou colocar em passo a passo a nível de informação e conhecimento e para garantir que as análises estão retornando o que eu desejo. 
+
+Inicialmente, a sintaxe que deve ser armazenada na view. 
+
+SELECT
+	genero AS Gênero,
+	ROUND(AVG(preco_aluguel), 2) AS 'Preço Médio',
+    	COUNT(*) AS 'Qtidade de Filmes'
+FROM filmes
+GROUP BY genero;
+
++----------------------+---------------+-------------------+
+| Gênero               | Preço Médio   | Qtidade de Filmes |
++----------------------+---------------+-------------------+
+| Ação e Aventura      |          2.51 |                 5 |
+| Animação             |          1.79 |                 2 |
+| Arte                 |          2.59 |                 1 |
+| Comédia              |          2.29 |                10 |
+| Drama                |          2.15 |                36 |
+| Ficção e Fantasia    |          2.24 |                11 |
+| Mistério e Suspense  |          2.17 |                 6 |
++----------------------+---------------+-------------------+
+
+-- Não quis ordenar por nenhum parâmetro, mas de acordo com o que os gestores julgassem mais importante, poderia fazê-lo. 
+-- Por fim, a criação da View. Chamarei de "Análise_Catalogo_Gênero" para facilitar a qualquer pessoa, qual é o objetivo da View
+
+CREATE VIEW Análise_Catalogo_Gênero AS
+SELECT
+	genero AS Gênero,
+	ROUND(AVG(preco_aluguel), 2) AS 'Preço Médio',
+    	COUNT(*) AS 'Qtidade de Filmes'
+FROM filmes
+GROUP BY genero;
+
+
+-- Testando a View: 
+SELECT * FROM Análise_Catalogo_Gênero; 
++----------------------+---------------+-------------------+
+| Gênero               | Preço Médio   | Qtidade de Filmes |
++----------------------+---------------+-------------------+
+| Ação e Aventura      |          2.51 |                 5 |
+| Animação             |          1.79 |                 2 |
+| Arte                 |          2.59 |                 1 |
+| Comédia              |          2.29 |                10 |
+| Drama                |          2.15 |                36 |
+| Ficção e Fantasia    |          2.24 |                11 |
+| Mistério e Suspense  |          2.17 |                 6 |
++----------------------+---------------+-------------------+
+
+
